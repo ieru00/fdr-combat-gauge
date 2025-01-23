@@ -1,0 +1,69 @@
+<div class="combat-gauge-container">
+    <div class="force-section friendly">
+        <h3>{{localize "COMBATGAUGE.FriendlyForces"}}</h3>
+        <div class="gauge-row">
+            <span class="label">{{localize "COMBATGAUGE.TotalPower"}}</span>
+            <div class="gauge-bar">
+                <div class="fill friendly-total" style="width: {{friendly.total}}%"></div>
+            </div>
+            <span class="value">{{friendly.total}}%</span>
+        </div>
+        {{#if isGM}}
+        <div class="gauge-row">
+            <span class="label">{{localize "COMBATGAUGE.HP"}}</span>
+            <div class="gauge-bar">
+                <div class="fill friendly-hp" style="width: {{friendly.hp}}%"></div>
+            </div>
+            <span class="value">{{friendly.hp}}%</span>
+        </div>
+        <div class="gauge-row">
+            <span class="label">{{localize "COMBATGAUGE.SpellSlots"}}</span>
+            <div class="gauge-bar">
+                <div class="fill friendly-spells" style="width: {{friendly.spellSlots}}%"></div>
+            </div>
+            <span class="value">{{friendly.spellSlots}}%</span>
+        </div>
+        <div class="gauge-row">
+            <span class="label">{{localize "COMBATGAUGE.Resources"}}</span>
+            <div class="gauge-bar">
+                <div class="fill friendly-resources" style="width: {{friendly.resources}}%"></div>
+            </div>
+            <span class="value">{{friendly.resources}}%</span>
+        </div>
+        {{/if}}
+    </div>
+
+    <div class="force-section hostile">
+        <h3>{{localize "COMBATGAUGE.HostileForces"}}</h3>
+        <div class="gauge-row">
+            <span class="label">{{localize "COMBATGAUGE.TotalPower"}}</span>
+            <div class="gauge-bar">
+                <div class="fill hostile-total" style="width: {{hostile.total}}%"></div>
+            </div>
+            <span class="value">{{hostile.total}}%</span>
+        </div>
+        {{#if isGM}}
+        <div class="gauge-row">
+            <span class="label">{{localize "COMBATGAUGE.HP"}}</span>
+            <div class="gauge-bar">
+                <div class="fill hostile-hp" style="width: {{hostile.hp}}%"></div>
+            </div>
+            <span class="value">{{hostile.hp}}%</span>
+        </div>
+        <div class="gauge-row">
+            <span class="label">{{localize "COMBATGAUGE.SpellSlots"}}</span>
+            <div class="gauge-bar">
+                <div class="fill hostile-spells" style="width: {{hostile.spellSlots}}%"></div>
+            </div>
+            <span class="value">{{hostile.spellSlots}}%</span>
+        </div>
+        <div class="gauge-row">
+            <span class="label">{{localize "COMBATGAUGE.Resources"}}</span>
+            <div class="gauge-bar">
+                <div class="fill hostile-resources" style="width: {{hostile.resources}}%"></div>
+            </div>
+            <span class="value">{{hostile.resources}}%</span>
+        </div>
+        {{/if}}
+    </div>
+</div>

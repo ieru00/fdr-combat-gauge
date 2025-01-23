@@ -1,6 +1,14 @@
 {
-    "combat-gauge": {
-
-      
-    }
+  "COMBATGAUGE": {
+      "FriendlyForces": "Friendly Forces",
+      "HostileForces": "Hostile Forces",
+      "TotalPower": "Total Power",
+      "HP": "Hit Points",
+      "SpellSlots": "Spell Slots",
+      "Resources": "Resources",
+      "Settings": {
+          "DisplayMode": "Display Mode",
+          "DisplayModeHint": "Choose where to display the combat gauge"
+      }
   }
+}

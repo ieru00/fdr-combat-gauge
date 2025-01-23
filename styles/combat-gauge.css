@@ -1,0 +1,69 @@
+.combat-gauge-container {
+    padding: 10px;
+}
+
+.force-section {
+    margin-bottom: 20px;
+}
+
+.force-section h3 {
+    margin-bottom: 10px;
+    border-bottom: 2px solid #782e22;
+    padding-bottom: 5px;
+}
+
+.gauge-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.gauge-row .label {
+    flex: 0 0 100px;
+}
+
+.gauge-row .value {
+    flex: 0 0 50px;
+    text-align: right;
+}
+
+.gauge-bar {
+    flex: 1;
+    height: 15px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 7px;
+    margin: 0 10px;
+    overflow: hidden;
+}
+
+.fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* Friendly Forces Colors */
+.friendly-total { background: #4a9eff; }
+.friendly-hp { background: #2ecc71; }
+.friendly-spells { background: #9b59b6; }
+.friendly-resources { background: #f1c40f; }
+
+/* Hostile Forces Colors */
+.hostile-total { background: #e74c3c; }
+.hostile-hp { background: #e67e22; }
+.hostile-spells { background: #8e44ad; }
+.hostile-resources { background: #d35400; }
+
+/* Position Styles */
+.combat-gauge-right {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.combat-gauge-left {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}

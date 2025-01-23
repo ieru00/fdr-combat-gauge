@@ -17,8 +17,7 @@
       }
     ]
   },
-    "esmodules": ["scripts/cmbga.js"],
-    "styles": ["styles/cmbga.css"],
+  "scripts": ["scripts/combat-gauge.js"],
     "languages": [
       {
         "lang": "en",
