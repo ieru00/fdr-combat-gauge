@@ -1,0 +1,39 @@
+{
+  "id": "combat-gauge",
+  "title": "Combat Gauge",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "12",
+    "maximum": "12"
+  },
+  
+  "relationships": {
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system",
+        "compatibility": {}
+      }
+    ]
+  },
+    "esmodules": ["scripts/cmbga.js"],
+    "styles": ["styles/cmbga.css"],
+    "languages": [
+      {
+        "lang": "en",
+        "name": "English",
+        "path": "languages/en.json"
+      }
+    ],
+  "description": "Bring up a bar that will display a gauge which will attempt to calculate the favor in which combat is occurring",
+  "authors": [
+    {
+      "name": "ieru00",
+      "flags": {}
+    }
+  ],
+  "url": "https://github.com/ieru00/fdr-combat-gauge",
+  "download": "https://github.com/ieru00/fdr-combat-gauge/raw/refs/heads/main/zipped/TokenHpAura.zip",
+  "manifest": "https://raw.githubusercontent.com/ieru00/fdr-combat-gauge/main/module.json"
+}
