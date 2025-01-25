@@ -1,0 +1,94 @@
+.combat-gauge {
+    position: absolute;
+    z-index: 1000;
+    pointer-events: all;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    min-width: 300px;
+    display: block !important;
+    visibility: visible !important;
+}
+
+.combat-gauge > .gauge-views > .compact-view {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 0 0 5px 5px;
+}
+
+.window-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+}
+
+
+.collapse-button {
+    cursor: pointer;
+}
+
+.collapse-button:hover {
+    color: #ff6400;
+}
+
+
+.compact-view {
+    padding: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.compact-view span {
+    color: white;
+}
+
+.combat-gauge-container {
+    padding: 10px;
+}
+
+.force-section {
+    margin-bottom: 20px;
+}
+
+.gauge-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.gauge-row .label {
+    flex: 0 0 100px;
+}
+
+.gauge-row .value {
+    flex: 0 0 50px;
+    text-align: right;
+}
+
+.gauge-bar {
+    flex: 1;
+    height: 15px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 7px;
+    margin: 0 10px;
+    overflow: hidden;
+}
+
+.fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* Colors */
+.friendly-total { background: #4a9eff; }
+.friendly-hp { background: #2ecc71; }
+.friendly-spells { background: #9b59b6; }
+.friendly-resources { background: #f1c40f; }
+
+.hostile-total { background: #e74c3c; }
+.hostile-hp { background: #e67e22; }
+.hostile-spells { background: #8e44ad; }
+.hostile-resources { background: #d35400; }
