@@ -1,18 +1,74 @@
 class CombatGaugeApp extends Application {
     static get defaultOptions() {
-        const displayMode = game.settings.get('combat-gauge', 'displayMode');
-        return mergeObject(super.defaultOptions, {
-            id: 'combat-gauge',
-            template: `modules/combat-gauge/templates/gauge.html`,
-            title: 'Combat Gauge',
-            width: 300,
-            height: 'auto',
-            popOut: displayMode === 'floating',
-            classes: [`combat-gauge-${displayMode}`]
+        return foundry.utils.mergeObject(super.defaultOptions, {
+            id: "combat-gauge",
+            template: "modules/combat-gauge/templates/gauge.hbs",
+            popOut: false,
+            _element: null
+        });
+    }
+    
+    async render(force = false, options = {}) {
+        const data = await this.getData();
+        const html = await renderTemplate(this.options.template, data);
+    
+        if (!this.options._element) {
+            const element = $('<div>').addClass('combat-gauge');
+            element.css({
+                position: 'absolute',
+                left: '100px',
+                top: '100px',
+                zIndex: 1000
+            });
+            $('#ui-top').append(element);
+            this.options._element = element;
+        }
+    
+        this.options._element.html(html);
+        this.activateListeners(this.options._element);
+        return this;
+    }
+
+    activateListeners(html) {
+        super.activateListeners(html);
+        html.find('.window-header').mousedown(ev => {
+            ev.preventDefault();
+            let pos = html.position();
+            let x = ev.pageX - pos.left;
+            let y = ev.pageY - pos.top;
+            
+            $('body').mousemove(e => {
+                html.css({
+                    left: e.pageX - x,
+                    top: e.pageY - y
+                });
+            });
+            
+            $('body').mouseup(() => {
+                $('body').off('mousemove');
+                $('body').off('mouseup');
+            });
+        });
+        
+        html.find('.collapse-button').click(() => {
+            const container = html.find('.combat-gauge-container');
+            const icon = html.find('.collapse-button i');
+            const fullView = html.find('.full-view');
+            const compactView = html.find('.compact-view');
+            
+            if (fullView.is(':visible')) {
+                fullView.hide();
+                compactView.show();
+                icon.removeClass('fa-chevron-up').addClass('fa-chevron-down');
+            } else {
+                fullView.show();
+                compactView.hide();
+                icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+            }
         });
     }
 
-    getData() {
+    async getData() {
         const combatData = this._calculateCombatData();
         return {
             isGM: game.user.isGM,
@@ -24,8 +80,8 @@ class CombatGaugeApp extends Application {
     _calculateCombatData() {
         const combat = game.combat;
         if (!combat) return this._getEmptyData();
-
-        const friendlyCombatants = combat.combatants.filter(c => !c.token?.disposition === CONST.TOKEN_DISPOSITIONS.HOSTILE);
+    
+        const friendlyCombatants = combat.combatants.filter(c => c.token?.disposition !== CONST.TOKEN_DISPOSITIONS.HOSTILE);
         const hostileCombatants = combat.combatants.filter(c => c.token?.disposition === CONST.TOKEN_DISPOSITIONS.HOSTILE);
 
         return {
@@ -76,16 +132,56 @@ class CombatGaugeApp extends Application {
 
     _calculateClassResources(actor, resourceTotals) {
         const classFeatures = {
-            'barbarian': { feature: 'rage', maxPath: 'system.resources.rage.max', valuePath: 'system.resources.rage.value' },
-            'monk': { feature: 'ki', maxPath: 'system.resources.ki.max', valuePath: 'system.resources.ki.value' },
-            'fighter': { feature: 'secondWind', maxPath: 'system.resources.secondwind.max', valuePath: 'system.resources.secondwind.value' }
+            'barbarian': { 
+                feature: 'rage', 
+                maxPath: 'system.resources.rage.max', 
+                valuePath: 'system.resources.rage.value' 
+            },
+            'monk': { 
+                feature: 'ki', 
+                maxPath: 'system.resources.ki.max', 
+                valuePath: 'system.resources.ki.value' 
+            },
+            'fighter': { 
+                feature: 'secondWind', 
+                maxPath: 'system.resources.secondwind.max', 
+                valuePath: 'system.resources.secondwind.value' 
+            },
+            'cleric': {
+                feature: 'channelDivinity',
+                maxPath: 'system.resources.channelDivinity.max',
+                valuePath: 'system.resources.channelDivinity.value'
+            },
+            'druid': {
+                feature: 'wildShape',
+                maxPath: 'system.resources.wildShape.max',
+                valuePath: 'system.resources.wildShape.value'
+            },
+            'paladin': {
+                feature: 'layOnHands',
+                maxPath: 'system.resources.layOnHands.max',
+                valuePath: 'system.resources.layOnHands.value'
+            }
         };
-
+    
         const className = actor.items.find(i => i.type === 'class')?.name.toLowerCase();
         if (className && classFeatures[className]) {
             const feature = classFeatures[className];
-            resourceTotals.totalResources += getProperty(actor, feature.maxPath) || 0;
-            resourceTotals.currentResources += getProperty(actor, feature.valuePath) || 0;
+            const max = getProperty(actor, feature.maxPath) || 0;
+            const value = getProperty(actor, feature.valuePath) || 0;
+            resourceTotals.totalResources += max;
+            resourceTotals.currentResources += value;
+        }
+    
+        // Add check for and handle any spellcasting resources
+        if (actor.system.spells) {
+            for (let level = 1; level <= 9; level++) {
+                const spellLvl = actor.system.spells[`spell${level}`];
+                if (spellLvl) {
+                    resourceTotals.totalSpellSlots += spellLvl.max || 0;
+                    resourceTotals.currentSpellSlots += spellLvl.value || 0;
+                }
+            }
         }
     }
 
@@ -95,12 +191,16 @@ class CombatGaugeApp extends Application {
             spellSlots: 0.3,
             resources: 0.2
         };
-
-        return Math.round(
-            (metrics.currentHP / metrics.totalHP * weights.hp +
-            metrics.currentSpellSlots / metrics.totalSpellSlots * weights.spellSlots +
-            metrics.currentResources / metrics.totalResources * weights.resources) * 100
-        ) || 0;
+    
+        // Calculate each component, using 0 if values are missing or invalid
+        const hpComponent = metrics.totalHP ? (metrics.currentHP / metrics.totalHP) * weights.hp : 0;
+        const spellComponent = metrics.totalSpellSlots ? (metrics.currentSpellSlots / metrics.totalSpellSlots) * weights.spellSlots : 0;
+        const resourceComponent = metrics.totalResources ? (metrics.currentResources / metrics.totalResources) * weights.resources : 0;
+    
+        // Sum all components and multiply by 100 for percentage
+        const total = (hpComponent + spellComponent + resourceComponent) * 100;
+    
+        return Math.round(total);
     }
 
     _getEmptyData() {
@@ -108,6 +208,12 @@ class CombatGaugeApp extends Application {
             friendly: { total: 0, hp: 0, spellSlots: 0, resources: 0 },
             hostile: { total: 0, hp: 0, spellSlots: 0, resources: 0 }
         };
+    }
+
+    close() {
+        this.options._element?.remove();
+        this.options._element = null;
+        return super.close();
     }
 }
 
@@ -119,33 +225,43 @@ const CombatGaugeModule = {
     },
 
     registerSettings() {
-        game.settings.register(this.ID, 'displayMode', {
-            name: 'Display Mode',
-            hint: 'Choose how the gauge is displayed',
-            scope: 'client',
+
+        game.settings.register(this.ID, 'gmOnly', {
+            name: 'GM Only',
+            hint: 'Only show the gauge to GM users',
+            scope: 'world',
             config: true,
-            type: String,
-            choices: {
-                'right': 'Right Side',
-                'left': 'Left Side',
-                'floating': 'Floating Window'
-            },
-            default: 'right'
+            type: Boolean,
+            default: false
         });
     },
 
     onReady() {
+        if (!game.user.isGM && game.settings.get(this.ID, 'gmOnly')) return;
+        
         Hooks.on('updateCombat', this._onUpdateCombat.bind(this));
         Hooks.on('deleteCombat', this._onDeleteCombat.bind(this));
+        Hooks.on('updateActor', (actor, changes) => {
+            if (game.combat?.started && this.gaugeApp) {
+                this.gaugeApp.render();
+            }
+        });
     },
 
     _onUpdateCombat(combat, changed, options, userId) {
-        if (!game.combat?.started) return;
+        if (!game.user.isGM && game.settings.get(this.ID, 'gmOnly')) return;
+    
+        if (!game.combat?.started) {
+            if (this.gaugeApp) {
+                this.gaugeApp.close();
+                this.gaugeApp = null;
+            }
+            return;
+        }
+    
         if (!this.gaugeApp) {
             this.gaugeApp = new CombatGaugeApp();
             this.gaugeApp.render(true);
-        } else {
-            this.gaugeApp.render();
         }
     },
 
@@ -155,8 +271,12 @@ const CombatGaugeModule = {
             this.gaugeApp = null;
         }
     }
+
+
 };
 
-Hooks.once('init', () => CombatGaugeModule.initialize());
+Hooks.once('init', () => {
+    CombatGaugeModule.initialize();
+});
 Hooks.once('ready', () => CombatGaugeModule.onReady());
 Hooks.once('setup', () => CombatGaugeModule.registerSettings());

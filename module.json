@@ -18,13 +18,15 @@
     ]
   },
   "scripts": ["scripts/combat-gauge.js"],
-    "languages": [
+  "languages": [
       {
         "lang": "en",
         "name": "English",
         "path": "languages/en.json"
       }
     ],
+  "styles": ["styles/combat-gauge.css"],
+  "templates": ["templates/gauge.hbs"],
   "description": "Bring up a bar that will display a gauge which will attempt to calculate the favor in which combat is occurring",
   "authors": [
     {
